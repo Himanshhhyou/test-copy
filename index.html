@@ -166,38 +166,40 @@
 
   <iframe id="preview"></iframe>
 
-  <script>
-    async function showPDF(suffix) {
-      const student = document.getElementById('studentSelect').value;
-      const iframe = document.getElementById('preview');
-      const errorMsg = document.getElementById('preview-error');
+ <script>
+  async function showPDF(suffix) {
+    const student = document.getElementById('studentSelect').value;
+    const iframe = document.getElementById('preview');
+    const errorMsg = document.getElementById('preview-error');
 
-      // Reset previous preview
-      iframe.style.display = 'none';
-      errorMsg.style.display = 'none';
-      errorMsg.textContent = '';
+    // Reset previous state
+    iframe.style.display = 'none';
+    errorMsg.style.display = 'none';
+    errorMsg.textContent = '';
 
-      if (!student) {
-        alert("📌 Please select your name first.");
-        return;
-      }
+    if (!student) {
+      alert("📌 Please select your name first.");
+      return;
+    }
 
-      const pdfPath = `${student}-${suffix}.pdf`;
+    const pdfPath = `${student}-${suffix}.pdf`;
+    const testName = suffix === '6' ? "Test 6" : "Final Test";
 
-      try {
-        const response = await fetch(pdfPath, { method: 'HEAD' });
-        if (response.ok) {
-          iframe.src = pdfPath;
-          iframe.style.display = 'block';
-        } else {
-          errorMsg.textContent = "❌ Aapne test nahi diya hai.";
-          errorMsg.style.display = 'block';
-        }
-      } catch (error) {
-        errorMsg.textContent = "⚠️ Error loading file. Please try again.";
+    try {
+      const response = await fetch(pdfPath, { method: 'HEAD' });
+      if (response.ok) {
+        iframe.src = pdfPath;
+        iframe.style.display = 'block';
+      } else {
+        errorMsg.textContent = `❌ Aapne ${testName} nahi diya hai.`;
         errorMsg.style.display = 'block';
       }
+    } catch (error) {
+      errorMsg.textContent = `⚠️ Error checking ${testName}. Please try again.`;
+      errorMsg.style.display = 'block';
     }
-  </script>
+  }
+</script>
+
 </body>
 </html>
