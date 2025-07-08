@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Marksheet Viewer</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: #f0f4f8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: white;
+      padding: 30px 40px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 100%;
+      animation: fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-size: 16px;
+      color: #444;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      transition: border-color 0.3s;
+    }
+
+    select:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 20px;
+        margin: 10px;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+
+      select, button {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>📚 Select Your Name to View Test Copy</h2>
+
+    <label for="studentSelect">Student Name:</label>
+    <select id="studentSelect">
+      <option value="">-- Select --</option>
+      <option value="anurag">Anurag</option>
+      <option value="amrendra">Amrendra</option>
+      <option value="meenakshi">Meenakshi</option>
+      <option value="nidhi">Nidhi</option>
+      <option value="rajat">Rajat</option>
+      <option value="sukhdev">Sukhdev</option>
+      <option value="vishal">Vishal</option>
+      <option value="vikas">Vikas</option>
+    </select>
+
+    <div class="btn-group">
+      <button onclick="openPDF('6')">📄 View Test 6 Copy</button>
+      <button onclick="openPDF('F')">📄 View Final Test Copy</button>
+    </div>
+  </div>
+
+<script>
+  async function openPDF(suffix) {
+    const student = document.getElementById('studentSelect').value;
+    if (!student) {
+      alert("Please select your name first.");
+      return;
+    }
+
+    const pdfPath = `${student}-${suffix}.pdf`;
+
+    try {
+      const response = await fetch(pdfPath, { method: 'HEAD' });
+      if (response.ok) {
+        window.open(pdfPath, '_blank');
+      } else {
+        alert("❌ Aapne test nahi diya hai.");
+      }
+    } catch (error) {
+      alert("⚠️ Error checking file. Please try again.");
+    }
+  }
+</script>
+
+</body>
+</html>
