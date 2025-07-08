@@ -178,7 +178,7 @@
     errorMsg.textContent = '';
 
     if (!student) {
-      alert("📌 Please select your name first.");
+      alert("📌 आपने नाम select नहीं किया, कृपया फिर से कोशिश करें ");
       return;
     }
 
@@ -191,7 +191,7 @@
         iframe.src = pdfPath;
         iframe.style.display = 'block';
       } else {
-        errorMsg.textContent = `❌ Aapne ${testName} nahi diya hai.`;
+        errorMsg.textContent = `❌ आप ${testName} में उपस्थित नहीं थें .`;
         errorMsg.style.display = 'block';
       }
     } catch (error) {
