@@ -3,26 +3,102 @@
 <head>
   <meta charset="UTF-8">
   <title>Student Marksheet Viewer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       padding: 0;
       font-family: "Segoe UI", sans-serif;
-      background: #f0f4f8;
+      background: linear-gradient(135deg, #e0f7fa, #ffffff);
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      min-height: 100vh;
+      flex-direction: column;
     }
 
     .container {
       background: white;
-      padding: 30px 40px;
-      border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-      max-width: 400px;
+      padding: 40px 50px;
+      border-radius: 18px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
       width: 100%;
-      animation: fadeIn 1s ease;
+      max-width: 600px;
+      animation: fadeIn 0.8s ease;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+      font-size: 26px;
+      margin-bottom: 30px;
+    }
+
+    label {
+      font-size: 18px;
+      color: #333;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    select {
+      width: 100%;
+      padding: 14px;
+      font-size: 17px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      transition: 0.3s;
+    }
+
+    select:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 25px;
+    }
+
+    button {
+      padding: 14px;
+      font-size: 17px;
+      border: none;
+      border-radius: 12px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+      transform: scale(1.03);
+    }
+
+    #preview {
+      width: 100%;
+      max-width: 800px;
+      height: 500px;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      display: none;
+      margin-bottom: 30px;
+      animation: fadeIn 0.5s ease;
+    }
+
+    #preview-error {
+      color: red;
+      margin-top: 10px;
+      font-size: 16px;
+      display: none;
     }
 
     @keyframes fadeIn {
@@ -36,77 +112,35 @@
       }
     }
 
-    h2 {
-      text-align: center;
-      color: #333;
-      margin-bottom: 20px;
-    }
-
-    label {
-      font-size: 16px;
-      color: #444;
-      display: block;
-      margin-bottom: 8px;
-    }
-
-    select {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      transition: border-color 0.3s;
-    }
-
-    select:focus {
-      border-color: #007bff;
-      outline: none;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 15px;
-      font-size: 16px;
-      border: none;
-      border-radius: 10px;
-      background-color: #007bff;
-      color: white;
-      cursor: pointer;
-      transition: background-color 0.3s, transform 0.2s;
-    }
-
-    button:hover {
-      background-color: #0056b3;
-    }
-
-    button:active {
-      transform: scale(0.97);
-    }
-
-    .btn-group {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    @media (max-width: 480px) {
+    @media (max-width: 600px) {
       .container {
-        padding: 20px;
-        margin: 10px;
+        padding: 25px 20px;
+        border-radius: 12px;
+        margin: 20px;
       }
 
       h2 {
-        font-size: 20px;
+        font-size: 22px;
       }
 
-      select, button {
-        font-size: 14px;
+      select {
+        font-size: 16px;
+        padding: 12px;
+      }
+
+      button {
+        font-size: 16px;
+        padding: 12px;
+      }
+
+      #preview {
+        height: 400px;
       }
     }
   </style>
 </head>
 <body>
+
   <div class="container">
     <h2>📚 Select Your Name to View Test Copy</h2>
 
@@ -124,33 +158,46 @@
     </select>
 
     <div class="btn-group">
-      <button onclick="openPDF('6')">📄 View Test 6 Copy</button>
-      <button onclick="openPDF('F')">📄 View Final Test Copy</button>
+      <button onclick="showPDF('6')">📄 View Test 6 Copy</button>
+      <button onclick="showPDF('F')">📄 View Final Test Copy</button>
     </div>
+    <p id="preview-error"></p>
   </div>
 
-<script>
-  async function openPDF(suffix) {
-    const student = document.getElementById('studentSelect').value;
-    if (!student) {
-      alert("Please select your name first.");
-      return;
-    }
+  <iframe id="preview"></iframe>
 
-    const pdfPath = `${student}-${suffix}.pdf`;
+  <script>
+    async function showPDF(suffix) {
+      const student = document.getElementById('studentSelect').value;
+      const iframe = document.getElementById('preview');
+      const errorMsg = document.getElementById('preview-error');
 
-    try {
-      const response = await fetch(pdfPath, { method: 'HEAD' });
-      if (response.ok) {
-        window.open(pdfPath, '_blank');
-      } else {
-        alert("❌ Aapne test nahi diya hai.");
+      // Reset previous preview
+      iframe.style.display = 'none';
+      errorMsg.style.display = 'none';
+      errorMsg.textContent = '';
+
+      if (!student) {
+        alert("📌 Please select your name first.");
+        return;
       }
-    } catch (error) {
-      alert("⚠️ Error checking file. Please try again.");
-    }
-  }
-</script>
 
+      const pdfPath = `${student}-${suffix}.pdf`;
+
+      try {
+        const response = await fetch(pdfPath, { method: 'HEAD' });
+        if (response.ok) {
+          iframe.src = pdfPath;
+          iframe.style.display = 'block';
+        } else {
+          errorMsg.textContent = "❌ Aapne test nahi diya hai.";
+          errorMsg.style.display = 'block';
+        }
+      } catch (error) {
+        errorMsg.textContent = "⚠️ Error loading file. Please try again.";
+        errorMsg.style.display = 'block';
+      }
+    }
+  </script>
 </body>
 </html>
