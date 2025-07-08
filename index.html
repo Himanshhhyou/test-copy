@@ -171,7 +171,7 @@
     </div>
 
     <p id="preview-error"></p>
-    <p id="pdf-help"></p>
+    <p id="pdf-help" style="font-size: 20px; color: red;"></p>
   </div>
 
   <iframe id="preview"></iframe>
@@ -204,7 +204,7 @@
           iframe.src = pdfPath;
           iframe.style.display = 'block';
           helpMsg.style.display = 'block';
-          helpMsg.textContent = "📄 PDF देखने के लिए पेज को स्क्रॉल करें या और 'Open' button दबाएं।";
+          helpMsg.textContent = "📄 PDF देखने के लिए पेज को स्क्रॉल करें और 'Open' button दबाएं।";
         } else {
           errorMsg.textContent = `❌ आप ${testName} में उपस्थित नहीं थें/थीं ।`;
           errorMsg.style.display = 'block';
