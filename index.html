@@ -90,7 +90,7 @@
       border: 2px solid #ddd;
       border-radius: 12px;
       display: none;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
       animation: fadeIn 0.5s ease;
     }
 
@@ -99,6 +99,14 @@
       margin-top: 10px;
       font-size: 16px;
       display: none;
+    }
+
+    #pdf-help {
+      font-size: 15px;
+      color: #2c3e50;
+      margin-top: 8px;
+      display: none;
+      text-align: center;
     }
 
     @keyframes fadeIn {
@@ -142,7 +150,7 @@
 <body>
 
   <div class="container">
-    <h2>📚 Test Copy देखने के लिए लिस्ट मे से अपना नाम सेलेक्ट करें और नीले बटन पर क्लिक करें  </h2>
+    <h2>📚 Test Copy देखने के लिए लिस्ट मे से अपना नाम सेलेक्ट करें और नीले बटन पर क्लिक करें</h2>
 
     <label for="studentSelect"></label>
     <select id="studentSelect">
@@ -158,48 +166,55 @@
     </select>
 
     <div class="btn-group">
-      <button onclick="showPDF('6')">📄 Test 6 की कॉपी देखें </button>
-      <button onclick="showPDF('F')">📄 Final Test की कॉपी देखें </button>
+      <button onclick="showPDF('6')">📄 Test 6 की कॉपी देखें</button>
+      <button onclick="showPDF('F')">📄 Final Test की कॉपी देखें</button>
     </div>
+
     <p id="preview-error"></p>
+    <p id="pdf-help"></p>
   </div>
 
   <iframe id="preview"></iframe>
 
- <script>
-  async function showPDF(suffix) {
-    const student = document.getElementById('studentSelect').value;
-    const iframe = document.getElementById('preview');
-    const errorMsg = document.getElementById('preview-error');
+  <script>
+    async function showPDF(suffix) {
+      const student = document.getElementById('studentSelect').value;
+      const iframe = document.getElementById('preview');
+      const errorMsg = document.getElementById('preview-error');
+      const helpMsg = document.getElementById('pdf-help');
 
-    // Reset previous state
-    iframe.style.display = 'none';
-    errorMsg.style.display = 'none';
-    errorMsg.textContent = '';
+      // Reset state
+      iframe.style.display = 'none';
+      errorMsg.style.display = 'none';
+      helpMsg.style.display = 'none';
+      errorMsg.textContent = '';
+      helpMsg.textContent = '';
 
-    if (!student) {
-      alert("📌 आपने नाम select नहीं किया, कृपया फिर से कोशिश करें ");
-      return;
-    }
+      if (!student) {
+        alert("📌 आपने नाम select नहीं किया, कृपया फिर से कोशिश करें");
+        return;
+      }
 
-    const pdfPath = `${student}-${suffix}.pdf`;
-    const testName = suffix === '6' ? "Test 6" : "Final Test";
+      const pdfPath = `${student}-${suffix}.pdf`;
+      const testName = suffix === '6' ? "Test 6" : "Final Test";
 
-    try {
-      const response = await fetch(pdfPath, { method: 'HEAD' });
-      if (response.ok) {
-        iframe.src = pdfPath;
-        iframe.style.display = 'block';
-      } else {
-        errorMsg.textContent = `❌ आप ${testName} में उपस्थित नहीं थें .`;
+      try {
+        const response = await fetch(pdfPath, { method: 'HEAD' });
+        if (response.ok) {
+          iframe.src = pdfPath;
+          iframe.style.display = 'block';
+          helpMsg.style.display = 'block';
+          helpMsg.textContent = "📄 PDF देखने के लिए iframe पर क्लिक करें या browser में 'Open' button दबाएं। यदि PDF नहीं दिख रहा हो तो अपने browser की PDF settings चेक करें।";
+        } else {
+          errorMsg.textContent = `❌ आप ${testName} में उपस्थित नहीं थें।`;
+          errorMsg.style.display = 'block';
+        }
+      } catch (error) {
+        errorMsg.textContent = `⚠️ ${testName} चेक करते समय कोई error आया, कृपया दोबारा कोशिश करें।`;
         errorMsg.style.display = 'block';
       }
-    } catch (error) {
-      errorMsg.textContent = `⚠️ Error checking ${testName}. Please try again.`;
-      errorMsg.style.display = 'block';
     }
-  }
-</script>
+  </script>
 
 </body>
 </html>
